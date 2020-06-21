@@ -1,40 +1,21 @@
 (function(exports) {
-
-    // 注意
-    // 这些代码只会执行一遍，对于某些可变的属性，尽量不要在此处定义，可以使用方法的形式
-    // 属性的调用直接写就好，但是方法的调用，尾部记得加()
-
-    // 获取window
-    // cWindow = UIApp.keyWindow;
-
-    // 根控制器
-    // cRootVC = function() {
-    //     return UIApp.keyWindow.rootViewController;
-    // };
-
-    // AppID
-    // cAppId = [NSBundle mainBundle].bundleIdentifier;
-
-    // 沙河路径
-    // cShaHe = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask,YES) firstObject];
-    
-    var invalidParamStr = 'Invalid parameter';
+	var invalidParamStr = 'Invalid parameter';
 	var missingParamStr = 'Missing parameter';
 
 	// app id
-	CCAppId = [NSBundle mainBundle].bundleIdentifier;
+	MJAppId = [NSBundle mainBundle].bundleIdentifier;
 
 	// mainBundlePath
-	CCAppPath = [NSBundle mainBundle].bundlePath;
+	MJAppPath = [NSBundle mainBundle].bundlePath;
 
-	// 沙河路径
-	CCDocPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+	// document path
+	MJDocPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
 
-	// 缓存路径
-	CCCachesPath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)[0]; 
+	// caches path
+	MJCachesPath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)[0]; 
 
 	// 加载系统动态库
-	CCLoadFramework = function(name) {
+	MJLoadFramework = function(name) {
 		var head = "/System/Library/";
 		var foot = "Frameworks/" + name + ".framework";
 		var bundle = [NSBundle bundleWithPath:head + foot] || [NSBundle bundleWithPath:head + "Private" + foot];
@@ -42,30 +23,30 @@
   		return bundle;
 	};
 
-	// 主窗口
-	CCKeyWin = function() {
+	// keyWindow
+	MJKeyWin = function() {
 		return UIApp.keyWindow;
 	};
 
 	// 根控制器
-	CCRootVc =  function() {
+	MJRootVc =  function() {
 		return UIApp.keyWindow.rootViewController;
 	};
 
 	// 找到显示在最前面的控制器
-	var _CCFrontVc = function(vc) {
+	var _MJFrontVc = function(vc) {
 		if (vc.presentedViewController) {
-        	return _CCFrontVc(vc.presentedViewController);
+        	return _MJFrontVc(vc.presentedViewController);
 	    }else if ([vc isKindOfClass:[UITabBarController class]]) {
-	        return _CCFrontVc(vc.selectedViewController);
+	        return _MJFrontVc(vc.selectedViewController);
 	    } else if ([vc isKindOfClass:[UINavigationController class]]) {
-	        return _CCFrontVc(vc.visibleViewController);
+	        return _MJFrontVc(vc.visibleViewController);
 	    } else {
 	    	var count = vc.childViewControllers.count;
     		for (var i = count - 1; i >= 0; i--) {
     			var childVc = vc.childViewControllers[i];
     			if (childVc && childVc.view.window) {
-    				vc = _CCFrontVc(childVc);
+    				vc = _MJFrontVc(childVc);
     				break;
     			}
     		}
@@ -73,24 +54,23 @@
     	}
 	};
 
-    // 获取最顶层控制器
-	CCFrontVc = function() {
-		return _CCFrontVc(UIApp.keyWindow.rootViewController);
+	MJFrontVc = function() {
+		return _MJFrontVc(UIApp.keyWindow.rootViewController);
 	};
 
 	// 递归打印UIViewController view的层级结构
-	CCVcSubviews = function(vc) { 
+	MJVcSubviews = function(vc) { 
 		if (![vc isKindOfClass:[UIViewController class]]) throw new Error(invalidParamStr);
 		return vc.view.recursiveDescription().toString(); 
 	};
 
 	// 递归打印最上层UIViewController view的层级结构
-	CCFrontVcSubViews = function() {
-		return CCVcSubviews(_CCFrontVc(UIApp.keyWindow.rootViewController));
+	MJFrontVcSubViews = function() {
+		return MJVcSubviews(_MJFrontVc(UIApp.keyWindow.rootViewController));
 	};
 
 	// 获取按钮绑定的所有TouchUpInside事件的方法名
-	CCBtnTouchUpEvent = function(btn) { 
+	MJBtnTouchUpEvent = function(btn) { 
 		var events = [];
 		var allTargets = btn.allTargets().allObjects()
 		var count = allTargets.count;
@@ -104,20 +84,20 @@
 	};
 
 	// CG函数
-	CCPointMake = function(x, y) { 
+	MJPointMake = function(x, y) { 
 		return {0 : x, 1 : y}; 
 	};
 
-	CCSizeMake = function(w, h) { 
+	MJSizeMake = function(w, h) { 
 		return {0 : w, 1 : h}; 
 	};
 
-	CCRectMake = function(x, y, w, h) { 
-		return {0 : CCPointMake(x, y), 1 : CCSizeMake(w, h)}; 
+	MJRectMake = function(x, y, w, h) { 
+		return {0 : MJPointMake(x, y), 1 : MJSizeMake(w, h)}; 
 	};
 
 	// 递归打印controller的层级结构
-	CCChildVcs = function(vc) {
+	MJChildVcs = function(vc) {
 		if (![vc isKindOfClass:[UIViewController class]]) throw new Error(invalidParamStr);
 		return [vc _printHierarchy].toString();
 	};
@@ -126,29 +106,29 @@
 
 
 	// 递归打印view的层级结构
-	CCSubviews = function(view) { 
+	MJSubviews = function(view) { 
 		if (![view isKindOfClass:[UIView class]]) throw new Error(invalidParamStr);
 		return view.recursiveDescription().toString(); 
 	};
 
 	// 判断是否为字符串 "str" @"str"
-	CCIsString = function(str) {
+	MJIsString = function(str) {
 		return typeof str == 'string' || str instanceof String;
 	};
 
 	// 判断是否为数组 []、@[]
-	CCIsArray = function(arr) {
+	MJIsArray = function(arr) {
 		return arr instanceof Array;
 	};
 
 	// 判断是否为数字 666 @666
-	CCIsNumber = function(num) {
+	MJIsNumber = function(num) {
 		return typeof num == 'number' || num instanceof Number;
 	};
 
-	var _CCClass = function(className) {
+	var _MJClass = function(className) {
 		if (!className) throw new Error(missingParamStr);
-		if (CCIsString(className)) {
+		if (MJIsString(className)) {
 			return NSClassFromString(className);
 		} 
 		if (!className) throw new Error(invalidParamStr);
@@ -157,8 +137,8 @@
 	};
 
 	// 打印所有的子类
-	CCSubclasses = function(className, reg) {
-		className = _CCClass(className);
+	MJSubclasses = function(className, reg) {
+		className = _MJClass(className);
 
 		return [c for each (c in ObjectiveC.classes) 
 		if (c != className 
@@ -169,8 +149,8 @@
 	};
 
 	// 打印所有的方法
-	var _CCGetMethods = function(className, reg, clazz) {
-		className = _CCClass(className);
+	var _MJGetMethods = function(className, reg, clazz) {
+		className = _MJClass(className);
 
 		var count = new new Type('I');
 		var classObj = clazz ? className.constructor : className;
@@ -192,37 +172,37 @@
 		return [methodsArray, methodNamesArray];
 	};
 
-	var _CCMethods = function(className, reg, clazz) {
-		return _CCGetMethods(className, reg, clazz)[0];
+	var _MJMethods = function(className, reg, clazz) {
+		return _MJGetMethods(className, reg, clazz)[0];
 	};
 
 	// 打印所有的方法名字
-	var _CCMethodNames = function(className, reg, clazz) {
-		return _CCGetMethods(className, reg, clazz)[1];
+	var _MJMethodNames = function(className, reg, clazz) {
+		return _MJGetMethods(className, reg, clazz)[1];
 	};
 
 	// 打印所有的对象方法
-	CCInstanceMethods = function(className, reg) {
-		return _CCMethods(className, reg);
+	MJInstanceMethods = function(className, reg) {
+		return _MJMethods(className, reg);
 	};
 
 	// 打印所有的对象方法名字
-	CCInstanceMethodNames = function(className, reg) {
-		return _CCMethodNames(className, reg);
+	MJInstanceMethodNames = function(className, reg) {
+		return _MJMethodNames(className, reg);
 	};
 
 	// 打印所有的类方法
-	CCClassMethods = function(className, reg) {
-		return _CCMethods(className, reg, true);
+	MJClassMethods = function(className, reg) {
+		return _MJMethods(className, reg, true);
 	};
 
 	// 打印所有的类方法名字
-	CCClassMethodNames = function(className, reg) {
-		return _CCMethodNames(className, reg, true);
+	MJClassMethodNames = function(className, reg) {
+		return _MJMethodNames(className, reg, true);
 	};
 
 	// 打印所有的成员变量
-	CCIvars = function(obj, reg){ 
+	MJIvars = function(obj, reg){ 
 		if (!obj) throw new Error(missingParamStr);
 		var x = {}; 
 		for(var i in *obj) { 
@@ -236,7 +216,7 @@
 	};
 
 	// 打印所有的成员变量名字
-	CCIvarNames = function(obj, reg) {
+	MJIvarNames = function(obj, reg) {
 		if (!obj) throw new Error(missingParamStr);
 		var array = [];
 		for(var name in *obj) { 
@@ -245,5 +225,4 @@
 		}
 		return array;
 	};
-
 })(exports);
