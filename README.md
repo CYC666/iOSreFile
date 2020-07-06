@@ -14,3 +14,11 @@
 【chmod +x /usr/bin/Clutch】修改文件权限为可执行  
 【Clutch -d 序号/ID】对某个ipa进行脱壳  
 【DYLD_INSERT_LIBRARIES=dumpdecrypted.dylib ipa路径】  
+【killall SpringBoard】重启桌面  
+【nic.pl】    【iphone/tweak】    【名称】    【包名】    【需要hook的ipa的包名（使用CCAppId获取）】  
+【export THEOS_DEVICE_IP=127.0.0.1】  
+【export THEOS_DEVICE_PORT=10010】  
+【make】【make package】【make install】  
+
+
+砸壳失败可以重启一下桌面
